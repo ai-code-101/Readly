@@ -7,7 +7,7 @@ import { allProgress, SHELF_EVENT, type Progress } from "@/lib/shelf";
 import { prettyPhone } from "@/lib/access";
 import { useAccess } from "./access-provider";
 
-/** Small personal strip on Home: subscription state + "continue reading". */
+/** Small personal strip on Home: subscription state (subscribers only) + "continue reading". */
 export function HomeGreeting() {
   const access = useAccess();
   const [current, setCurrent] = useState<Progress | null>(null);
@@ -19,7 +19,7 @@ export function HomeGreeting() {
     return () => window.removeEventListener(SHELF_EVENT, sync);
   }, []);
 
-  if (access.me === undefined) return null;
+  if (access.me === undefined || (!access.subscribed && !current)) return null;
 
   return (
     <div className="mx-auto mt-4 grid max-w-2xl gap-3 sm:grid-cols-2">
@@ -31,12 +31,7 @@ export function HomeGreeting() {
             {access.me.subscription && new Date(access.me.subscription.endsAt).toLocaleString("en-KE", { weekday: "short", hour: "numeric", minute: "2-digit" })}
           </p>
         </div>
-      ) : (
-        <div className="rounded-2xl bg-gold/15 px-4 py-3 text-sm">
-          <p className="font-bold text-forest-900">{access.freeLeft} of 5 free books left</p>
-          <p className="text-xs text-forest-900/80">Free-to-read titles are always open. Premium: Ksh 10 airtime/day.</p>
-        </div>
-      )}
+      ) : null}
       {current && (
         <Link href={`/read/${current.slug}`} className="flex items-center gap-3 rounded-2xl border border-cream-200 bg-white px-3 py-2.5 hover:border-forest-700">
           {current.thumbUrl ? <img src={current.thumbUrl} alt="" className="h-12 w-8 rounded object-cover" /> : <span className="h-12 w-8 rounded bg-forest-700" />}

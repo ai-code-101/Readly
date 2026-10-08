@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Category } from "@/lib/api";
 
 /** Mobile slide-in category menu (Figma: mobile-category-drawer). */
@@ -38,7 +39,9 @@ export function CategoryDrawer({ categories }: { categories: Category[] }) {
           <path d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      {open && (
+      {/* Rendered into <body>: the header's backdrop-blur would otherwise trap this
+          fixed overlay inside the 64px-high header. */}
+      {open && createPortal(
         <div className="fixed inset-0 z-50 flex" role="dialog" aria-modal="true" aria-label="Categories">
           <div className="flex h-full w-[83%] max-w-sm flex-col bg-forest-800 px-5 pb-6 pt-8 text-white">
             <div className="mb-5 flex items-center justify-between">
@@ -67,7 +70,8 @@ export function CategoryDrawer({ categories }: { categories: Category[] }) {
             </nav>
           </div>
           <button className="flex-1 bg-black/70" onClick={() => setOpen(false)} aria-label="Close menu" />
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

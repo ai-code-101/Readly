@@ -8,7 +8,9 @@ const display = Instrument_Serif({ variable: "--font-display-serif", subsets: ["
 const literata = Literata({ variable: "--font-literata", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  applicationName: "Readly",
   title: { default: "Readly — Your Digital Library", template: "%s · Readly" },
+  appleWebApp: { capable: true, title: "Readly", statusBarStyle: "default" },
   description:
     "Describe a scene, select a genre, or dive straight into timeless literary masterpieces. Readly brings a hand-curated world of e-books right to your fingertips.",
 };

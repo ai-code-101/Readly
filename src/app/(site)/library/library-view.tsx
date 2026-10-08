@@ -4,9 +4,27 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { allProgress, getSaved, SHELF_EVENT, type BookRef, type Progress, type Saved } from "@/lib/shelf";
+import { prettyPhone, progressApi, type ServerProgress } from "@/lib/access";
+import { useAccess } from "@/components/access-provider";
+
+/** Merge browser and account progress, keeping the newest position per book. */
+function merge(local: Progress[], remote: ServerProgress[]): Progress[] {
+  const byslug = new Map(local.map((p) => [p.slug, p]));
+  for (const r of remote) {
+    const at = Date.parse(r.updatedAt);
+    const l = byslug.get(r.slug);
+    if (!l || at > l.updatedAt) {
+      byslug.set(r.slug, { slug: r.slug, title: r.title, author: r.author, thumbUrl: r.thumbUrl, cfi: r.cfi, percent: r.percent, chapter: r.chapter, updatedAt: at });
+    }
+  }
+  return [...byslug.values()].sort((a, b) => b.updatedAt - a.updatedAt);
+}
 
 export function LibraryView() {
+  const access = useAccess();
+  const signedIn = !!access.me;
   const [state, setState] = useState<{ reading: Progress[]; saved: Saved[] } | null>(null);
+  const [remote, setRemote] = useState<ServerProgress[]>([]);
 
   useEffect(() => {
     const sync = () => setState({ reading: allProgress(), saved: getSaved() });
@@ -15,20 +33,54 @@ export function LibraryView() {
     return () => window.removeEventListener(SHELF_EVENT, sync);
   }, []);
 
+  useEffect(() => {
+    if (!signedIn) return;
+    progressApi.list().then(setRemote).catch(() => {});
+  }, [signedIn]);
+
   if (!state) return <div className="mt-10 h-48 animate-pulse rounded-3xl bg-cream-200" />;
-  const [current, ...rest] = state.reading;
+  const reading = merge(state.reading, signedIn ? remote : []);
+  const [current, ...rest] = reading;
+
+  const accountCard = access.me === undefined ? null : access.me ? (
+    <section className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-cream-200 bg-white p-5">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-wider text-muted">Signed in as</p>
+        <p className="text-lg font-bold text-forest-800">{prettyPhone(access.me.user.phone)}</p>
+        <p className="text-sm text-muted">
+          {access.subscribed && access.me.subscription
+            ? `Readly Premium · active until ${new Date(access.me.subscription.endsAt).toLocaleString("en-KE", { dateStyle: "medium", timeStyle: "short" })}`
+            : "No active subscription — premium books need Ksh 10/day. Your progress is still saved."}
+        </p>
+      </div>
+      <button onClick={() => access.signOut()} className="btn-outline px-5 py-2">Sign out</button>
+    </section>
+  ) : (
+    <section className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-cream-200 bg-white p-5">
+      <div>
+        <p className="font-bold text-forest-800">Subscribed on another device?</p>
+        <p className="text-sm text-muted">Sign in with your phone number to continue where you left off. {access.freeLeft} of 5 free books left on this device.</p>
+      </div>
+      <button onClick={() => access.openSignIn()} className="btn-primary px-5 py-2">Sign in with your number</button>
+    </section>
+  );
 
   if (!current && state.saved.length === 0) {
     return (
+      <>
+      {accountCard}
       <div className="mt-10 rounded-3xl border-2 border-dashed border-cream-300 p-12 text-center">
         <p className="font-display text-2xl text-forest-800">Your library is empty</p>
         <p className="mt-2 text-sm text-muted">Start reading or save a book and it will show up here.</p>
         <Link href="/discover" className="btn-primary mt-6">Discover books</Link>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+    {accountCard}
     <div className="mt-8 space-y-12">
       {current && (
         <section className="rounded-3xl bg-forest-800 p-5 text-white sm:p-8">
@@ -57,6 +109,7 @@ export function LibraryView() {
       )}
       {state.saved.length > 0 && <Grid title="Saved books" books={state.saved} hrefPrefix="/books/" />}
     </div>
+    </>
   );
 }
 

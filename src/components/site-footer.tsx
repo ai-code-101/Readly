@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { Logo } from "./logo";
 
+const WEBSITE_URL = process.env.NEXT_PUBLIC_WEBSITE_URL ?? "http://localhost:3002";
+
 const COLUMNS = [
   { title: "Library", links: [["All Books", "/discover"], ["Trending", "/discover?trending=1"], ["Categories", "/categories"], ["Staff Picks", "/discover?staffPick=1"]] },
-  { title: "Company", links: [["About Us", "/#our-story"], ["Contact", "mailto:support@peakmobile.co.ke"]] },
+  { title: "Company", links: [["About Us", `${WEBSITE_URL}/#our-story`], ["Contact", "mailto:support@peakmobile.co.ke"]] },
   { title: "Legal", links: [["Terms", "#"], ["Privacy", "#"], ["Copyright", "#"]] },
 ];
 

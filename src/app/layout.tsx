@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Instrument_Serif, Literata } from "next/font/google";
+import { AccessProvider } from "@/components/access-provider";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
@@ -17,7 +18,9 @@ export const viewport: Viewport = { themeColor: "#0b4a3b" };
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.variable} ${display.variable} ${literata.variable} antialiased`}>
-      <body className="min-h-screen font-sans">{children}</body>
+      <body className="min-h-screen font-sans">
+        <AccessProvider>{children}</AccessProvider>
+      </body>
     </html>
   );
 }

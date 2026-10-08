@@ -58,6 +58,7 @@ export default async function BookPage(props: PageProps<"/books/[slug]">) {
             <BookActions
               book={{ slug: book.slug, title: book.title, author: book.author, thumbUrl: book.thumbUrl }}
               canRead={!!book.epubUrl}
+              isFree={book.isFree}
             />
           </div>
 

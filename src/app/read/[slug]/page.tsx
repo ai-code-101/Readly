@@ -11,8 +11,8 @@ export async function generateMetadata(props: PageProps<"/read/[slug]">): Promis
 export default async function ReadPage(props: PageProps<"/read/[slug]">) {
   const book = await getBook((await props.params).slug);
   if (!book || !book.epubUrl) notFound();
-  // TODO(paywall): once accounts exist, check the 5-free-books allowance / subscription
-  // here (and in the API) and render the paywall instead of the reader.
+  // Access (free book, one of the 5 free books, or an active subscription) is
+  // checked on the client by ReaderClient, which shows the paywall otherwise.
   return (
     <ReaderClient
       book={{
@@ -22,6 +22,7 @@ export default async function ReadPage(props: PageProps<"/read/[slug]">) {
         thumbUrl: book.thumbUrl,
         epubUrl: book.epubUrl,
         pageCount: book.pageCount,
+        isFree: book.isFree,
       }}
     />
   );

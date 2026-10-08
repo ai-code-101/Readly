@@ -6,7 +6,8 @@ import type Book from "epubjs/types/book";
 import type Rendition from "epubjs/types/rendition";
 import type { Location } from "epubjs/types/rendition";
 import type { NavItem } from "epubjs/types/navigation";
-import { getProgress, setProgress } from "@/lib/shelf";
+import { getProgress, setProgress, type Progress } from "@/lib/shelf";
+import { progressApi } from "@/lib/access";
 import { contentCss, FONT_CSS_URL, loadSettings, saveSettings, THEMES, type ReaderSettings } from "./settings";
 import { SettingsPanel } from "./settings-panel";
 import { TocPanel, type TocEntry } from "./toc-panel";
@@ -24,7 +25,8 @@ type Status = { kind: "loading"; percent: number | null } | { kind: "ready" } | 
 
 const LOCATION_CHARS = 1200;
 
-export function Reader({ book: meta }: { book: ReaderBook }) {
+/** syncToServer: the reader is signed in, so progress is also saved to (and restored from) the API. */
+export function Reader({ book: meta, syncToServer = false }: { book: ReaderBook; syncToServer?: boolean }) {
   const viewerRef = useRef<HTMLDivElement>(null);
   const bookRef = useRef<Book | null>(null);
   const renditionRef = useRef<Rendition | null>(null);
@@ -99,7 +101,14 @@ export function Reader({ book: meta }: { book: ReaderBook }) {
         rendition.on("touchstart", nav.onTouchStart);
         rendition.on("touchend", nav.onTouchEnd);
 
-        const saved = getProgress(meta.slug);
+        // Resume from whichever position is newer: this browser's or the account's.
+        let saved = getProgress(meta.slug);
+        if (syncToServer) {
+          const remote = await progressApi.get(meta.slug).catch(() => null);
+          if (remote && (!saved || Date.parse(remote.updatedAt) > saved.updatedAt)) {
+            saved = { ...(saved ?? { slug: meta.slug, title: meta.title, author: meta.author, thumbUrl: meta.thumbUrl }), cfi: remote.cfi, percent: remote.percent, chapter: remote.chapter, updatedAt: Date.parse(remote.updatedAt) };
+          }
+        }
         await rendition.display(saved?.cfi || undefined).catch(() => rendition.display());
         if (cancelled) return;
         setStatus({ kind: "ready" });
@@ -135,7 +144,7 @@ export function Reader({ book: meta }: { book: ReaderBook }) {
       setChapterPage(loc.start.displayed);
       const p = locationsReady ? (loc.atEnd ? 1 : book.locations.percentageFromCfi(loc.start.cfi)) : null;
       if (p !== null) setPercent(p);
-      setProgress({
+      const progress: Progress = {
         slug: meta.slug,
         title: meta.title,
         author: meta.author,
@@ -144,11 +153,35 @@ export function Reader({ book: meta }: { book: ReaderBook }) {
         percent: p ?? getProgress(meta.slug)?.percent ?? 0,
         chapter: title,
         updatedAt: Date.now(),
-      });
+      };
+      setProgress(progress);
+      if (syncToServer) {
+        pending = progress;
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(flush, 2000);
+      }
     }
+
+    // Saves to the account are batched: at most one request per 2 s of reading,
+    // plus a final one when the reader leaves the page.
+    let pending: Progress | null = null;
+    let syncTimer: ReturnType<typeof setTimeout> | undefined;
+    function flush() {
+      if (!pending) return;
+      const p = pending;
+      pending = null;
+      progressApi
+        .put(p.slug, { cfi: p.cfi, percent: p.percent, chapter: p.chapter, updatedAt: new Date(p.updatedAt).toISOString() })
+        .catch(() => {});
+    }
+    const onHide = () => document.visibilityState === "hidden" && flush();
+    document.addEventListener("visibilitychange", onHide);
 
     return () => {
       cancelled = true;
+      clearTimeout(syncTimer);
+      flush();
+      document.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("keyup", nav.onKey);
       renditionRef.current?.destroy();
       bookRef.current?.destroy();

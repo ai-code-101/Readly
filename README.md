@@ -7,13 +7,21 @@ Part of three repos:
 
 | Repo | What it is | Port |
 |---|---|---|
-| **readly** (this) | Reader site: browse, book pages, EPUB reader | 3000 |
+| **readly** (this) | Reading platform: home, browse, book pages, paywall, EPUB reader | 3000 |
+| [readly-website](https://github.com/ai-code-101/readly-website) | Marketing site; "Start Reading" links here | 3002 |
 | [readly-api](https://github.com/ai-code-101/readly-api) | Go + PostgreSQL API; stores books, covers and EPUBs | 8080 |
 | [readly-admin](https://github.com/ai-code-101/readly-admin) | Admin app for uploading books and managing categories | 3001 |
 
 ## What's included
 
-- **Home**: hero with Book of the Day, stats, genres, Trending, Free to read, New releases
+- **Home** (Figma "Home"): search, today's trending books ("What everyone is reading"), then a shelf
+  per category; shows free books left / subscription status and "continue reading"
+- **Paywall** on premium books, with two options:
+  - **Free Plan** — use one of **5 free books** (counted in this browser)
+  - **Daily Payment, Ksh 10 airtime** — enter a phone number, verify the SMS code, and the
+    subscription is active for 24 h ("Subscription Successful!"). Airtime billing isn't connected yet,
+    so verifying the number is enough for now.
+  - "Already subscribed? Sign in with your number" restores access and progress on another device
 - **Categories**: all categories with Trending and Staff Picks rows, plus a page per category with sort
   (Most Popular / New Releases / Highest Rated / A–Z), search and pagination
 - **Discover**: search across the whole library; filters for trending, staff picks and free books
@@ -28,8 +36,9 @@ Part of three repos:
   - reopens at the page where you stopped
 - **My Library**: your current read with its progress, books you're also reading, and saved books
 
-Until user accounts exist, reading progress, saved books and reader settings are stored in the
-browser's `localStorage`.
+Reading progress is kept in the browser for everyone. Once a reader has subscribed (and is signed in
+with their number) it is also saved to the database, so it follows them to other devices. Saved books
+and reader settings stay in the browser.
 
 ## Run everything locally
 
@@ -40,7 +49,7 @@ docker compose up -d db && cp .env.example .env && make seed && make run
 # 2. Admin (in readly-admin): upload a few EPUBs at http://localhost:3001
 cp .env.example .env.local && npm install && npm run dev
 
-# 3. Reader (here)
+# 3. Platform (here)
 cp .env.example .env.local && npm install && npm run dev   # http://localhost:3000
 ```
 
@@ -54,7 +63,6 @@ cp .env.example .env.local && npm install && npm run dev   # http://localhost:30
 
 ## Planned next
 
-- Sign up / login (email OTP from support@peakmobile.co.ke, Google sign-in)
-- Free plan: 5 free books, then the paywall; M-Pesa (Safaricom STK push) subscriptions
-  (hook points are marked `TODO(paywall)`)
-- Server-side progress and library sync, highlights, word definitions / My Vocabulary
+- Real airtime billing for the daily plan
+- Enforcing the paywall on the API's EPUB download too (today it is enforced in the app)
+- Highlights, word definitions / My Vocabulary

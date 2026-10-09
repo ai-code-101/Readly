@@ -53,9 +53,17 @@ cp .env.example .env.local && npm install && npm run dev
 cp .env.example .env.local && npm install && npm run dev   # http://localhost:3000
 ```
 
-`READLY_API_URL` (default `http://localhost:8080`) is used for server-side data fetching. Requests to
-`/api/v1/*` from the browser (covers, EPUB files) are forwarded to the API through a rewrite in
-`next.config.ts`.
+`READLY_API_URL` (default `http://localhost:8080`) is the API's base URL. The server uses it to load
+pages, and browser requests to `/api/v1/*` (covers, EPUB files, sign-in, progress) are proxied to it by
+`src/app/api/v1/[...path]/route.ts`, which also passes the session cookie through. Admin endpoints are
+never proxied.
+
+### Hosting (Netlify, Vercel, …)
+
+Set `READLY_API_URL` in the host's environment variables to the public API URL (e.g. an ngrok
+tunnel such as `https://your-name.ngrok-free.dev`, no trailing slash needed) and redeploy. Requests to
+the API carry `ngrok-skip-browser-warning`, so free ngrok tunnels don't answer with their HTML warning
+page. Because the site is served over HTTPS, set `COOKIE_SECURE=true` in the API's `.env`.
 
 ## Scripts
 

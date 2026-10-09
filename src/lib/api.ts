@@ -46,14 +46,25 @@ export type BookQuery = {
   pageSize?: number;
 };
 
-const API_URL = process.env.READLY_API_URL ?? "http://localhost:8080";
+import { unstable_rethrow } from "next/navigation";
+import { API_URL, UPSTREAM_HEADERS } from "./upstream";
 
 class NotFound extends Error {}
 
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_URL}/api/v1${path}`, { cache: "no-store" });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}/api/v1${path}`, { cache: "no-store", headers: UPSTREAM_HEADERS });
+  } catch (e) {
+    unstable_rethrow(e); // let Next.js's own control-flow errors through
+    throw new Error(`Cannot reach the Readly API at ${API_URL} (${(e as Error).message})`);
+  }
   if (res.status === 404) throw new NotFound(path);
   if (!res.ok) throw new Error(`Readly API ${res.status} for ${path}`);
+  if (!res.headers.get("content-type")?.includes("application/json")) {
+    // e.g. a tunnel or proxy answering with an HTML page instead of the API
+    throw new Error(`Readly API at ${API_URL} returned ${res.headers.get("content-type") || "no content type"} for ${path}, expected JSON`);
+  }
   return res.json() as Promise<T>;
 }
 

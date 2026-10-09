@@ -1,13 +1,7 @@
 import type { NextConfig } from "next";
 
-const API_URL = process.env.READLY_API_URL ?? "http://localhost:8080";
-
-const nextConfig: NextConfig = {
-  // Book covers, category images and EPUB files are referenced with relative
-  // /api/v1/... URLs; forward those to the Go API so they are same-origin.
-  async rewrites() {
-    return [{ source: "/api/v1/:path*", destination: `${API_URL}/api/v1/:path*` }];
-  },
-};
+// Browser requests to /api/v1/* (covers, EPUBs, sign-in, progress) are proxied
+// to the Readly API by src/app/api/v1/[...path]/route.ts (READLY_API_URL).
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { Logo } from "./logo";
-import { CategoryDrawer } from "./category-drawer";
 import { AccountButton } from "./account-button";
 import { SubscribeButton } from "./subscribe-button";
-import type { Category } from "@/lib/api";
 
 const NAV = [
   { href: "/", label: "Home" },
@@ -13,7 +11,7 @@ const NAV = [
   { href: "/library", label: "Library" },
 ];
 
-export function SiteHeader({ categories }: { categories: Category[] }) {
+export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-cream-200 bg-cream-100/90 backdrop-blur">
       <div className="container-page flex h-16 items-center gap-6">
@@ -39,9 +37,8 @@ export function SiteHeader({ categories }: { categories: Category[] }) {
           <SubscribeButton className="!py-2.5" />
           <AccountButton />
         </div>
-        <div className="ml-auto flex items-center gap-2 md:hidden">
+        <div className="ml-auto md:hidden">
           <SubscribeButton className="!px-4 !py-2.5" />
-          <CategoryDrawer categories={categories} />
         </div>
       </div>
     </header>

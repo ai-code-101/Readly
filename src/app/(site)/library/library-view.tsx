@@ -53,7 +53,10 @@ export function LibraryView() {
             : "No active subscription — premium books need Ksh 10/day. Your progress is still saved."}
         </p>
       </div>
-      <button onClick={() => access.signOut()} className="btn-outline px-5 py-2">Sign out</button>
+      <div className="flex gap-2">
+        {access.subscribed && <Link href="/subscription/manage" className="btn-primary px-5 py-2">Manage</Link>}
+        <button onClick={() => access.signOut()} className="btn-outline px-5 py-2">Sign out</button>
+      </div>
     </section>
   ) : (
     <section className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-cream-200 bg-white p-5">

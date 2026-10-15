@@ -30,6 +30,7 @@ export function AccountButton() {
             <p className="text-xs text-muted">Active until {new Date(access.me.subscription.endsAt).toLocaleString("en-KE", { dateStyle: "medium", timeStyle: "short" })}</p>
           )}
           <Link href="/library" onClick={() => setOpen(false)} className="mt-3 block rounded-lg px-2 py-1.5 hover:bg-cream-100">My Library</Link>
+          <Link href="/subscription/manage" onClick={() => setOpen(false)} className="block rounded-lg px-2 py-1.5 hover:bg-cream-100">Manage subscription</Link>
           <button onClick={() => { setOpen(false); access.signOut(); }} className="block w-full rounded-lg px-2 py-1.5 text-left text-red-700 hover:bg-red-50">
             Sign out
           </button>

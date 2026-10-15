@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { ACCESS_EVENT, auth, FREE_BOOK_LIMIT, freeBooks, type Me } from "@/lib/access";
 import { Paywall, type PaywallBook } from "./paywall";
@@ -13,8 +14,6 @@ type Access = {
   canRead: (book: { slug: string; isFree: boolean }) => boolean;
   /** Opens the paywall for a book; resolves to true once the reader may open it. */
   openPaywall: (book: PaywallBook, then?: () => void) => void;
-  /** Sign in with a phone number (to restore progress on a new device). */
-  openSignIn: () => void;
   /** Subscribe without a specific book (Subscribe Now button). */
   openSubscribe: () => void;
   refresh: () => Promise<void>;
@@ -26,7 +25,8 @@ const Ctx = createContext<Access | null>(null);
 export function AccessProvider({ children }: { children: ReactNode }) {
   const [me, setMe] = useState<Me | null | undefined>(undefined);
   const [freeUsed, setFreeUsed] = useState<string[]>([]);
-  const [paywall, setPaywall] = useState<{ book?: PaywallBook; start?: "subscribe" | "login"; then?: () => void } | null>(null);
+  const router = useRouter();
+  const [paywall, setPaywall] = useState<{ book: PaywallBook; then?: () => void } | null>(null);
 
   const refresh = useCallback(async () => {
     setFreeUsed(freeBooks());
@@ -55,15 +55,14 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       freeLeft: Math.max(0, FREE_BOOK_LIMIT - freeUsed.length),
       canRead: (b) => b.isFree || subscribed || freeUsed.includes(b.slug),
       openPaywall: (book, then) => setPaywall({ book, then }),
-      openSignIn: () => setPaywall({ start: "login" }),
-      openSubscribe: () => setPaywall({ start: "subscribe" }),
+      openSubscribe: () => router.push("/subscription"),
       refresh,
       signOut: async () => {
         await auth.logout().catch(() => {});
         await refresh();
       },
     }),
-    [me, subscribed, freeUsed, refresh],
+    [me, subscribed, freeUsed, refresh, router],
   );
 
   return (
@@ -72,7 +71,6 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       {paywall && (
         <Paywall
           book={paywall.book}
-          start={paywall.start}
           onClose={() => setPaywall(null)}
           onUnlocked={() => {
             const then = paywall.then;

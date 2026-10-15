@@ -8,6 +8,8 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       <SiteHeader />
       {children}
       <SiteFooter />
+      {/* Room for the bottom tab bar on phones (the footer is hidden there). */}
+      <div className="h-24 md:hidden" aria-hidden />
       <TabBar />
     </>
   );

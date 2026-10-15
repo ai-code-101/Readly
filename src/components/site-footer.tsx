@@ -11,7 +11,7 @@ const COLUMNS = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 bg-cream-200/70 pb-24 pt-14 md:pb-10">
+    <footer className="mt-24 hidden bg-cream-200/70 pb-10 pt-14 md:block">
       <div className="container-page">
         <div className="grid gap-10 md:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>

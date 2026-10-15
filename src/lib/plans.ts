@@ -1,7 +1,7 @@
 // The Readly Premium plan shown on the subscription / checkout screens.
 // One plan: Ksh 10 per day. Change it here in one place.
 // NOTE: the checkout screens are presentation-only; no payment is processed.
-// The working subscription today is the Ksh 10/day phone-OTP flow (paywall).
+// Safaricom subscriptions (DSDP) will replace the demo checkout.
 
 export const PLAN = {
   name: "Readly Premium",

@@ -31,21 +31,9 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
   return (res.status === 204 ? undefined : res.json()) as T;
 }
 
-const post = (body: unknown): RequestInit => ({
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(body),
-});
-
-export type Purpose = "subscribe" | "login";
-
 export const auth = {
   /** The signed-in reader, or null. */
   me: () => call<Me>("/me").catch((e) => (e instanceof ApiError && e.status === 401 ? null : Promise.reject(e))),
-  requestCode: (phone: string, purpose: Purpose) =>
-    call<{ phone: string; expiresIn: number; resendIn: number }>("/auth/otp/request", post({ phone, purpose })),
-  verifyCode: (phone: string, code: string, purpose: Purpose) =>
-    call<Me>("/auth/otp/verify", post({ phone, code, purpose })),
   logout: () => call<void>("/auth/logout", { method: "POST" }),
 };
 

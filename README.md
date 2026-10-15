@@ -18,14 +18,13 @@ Part of three repos:
   per category; shows free books left / subscription status and "continue reading"
 - **Paywall** on premium books, with two options:
   - **Free Plan** — use one of **5 free books** (counted in this browser)
-  - **Daily Payment, Ksh 10 airtime** — enter a phone number, verify the SMS code, and the
-    subscription is active for 24 h ("Subscription Successful!"). Airtime billing isn't connected yet,
-    so verifying the number is enough for now.
-  - "Already subscribed? Sign in with your number" restores access and progress on another device
+  - **Daily Payment, Ksh 10 airtime** — continues to the subscription checkout. Subscriptions will come
+    from Safaricom (consent page on mobile data); until that is connected the checkout screens are
+    presentation-only
 - **Browse** (Figma "Readly Browse"): every category as a coloured tile with an icon, plus a search box
   that filters categories (`/categories` redirects here); each category has its own page with sort
   (Most Popular / New Releases / Highest Rated / A–Z), search and pagination
-- **Subscribe Now** in the top bar opens the Ksh 10/day phone-OTP subscription directly; subscribers
+- **Subscribe Now** in the top bar opens the Choose Your Plan page; subscribers
   see a "Premium" badge instead
 - **Discover**: search across the whole library; filters for trending, staff picks and free books
 - **Book page**: cover, rating, category, page count, reading time, synopsis, Start/Continue Reading,

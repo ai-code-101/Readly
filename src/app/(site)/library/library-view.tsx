@@ -61,10 +61,10 @@ export function LibraryView() {
   ) : (
     <section className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-cream-200 bg-white p-5">
       <div>
-        <p className="font-bold text-forest-800">Subscribed on another device?</p>
-        <p className="text-sm text-muted">Sign in with your phone number to continue where you left off. {access.freeLeft} of 5 free books left on this device.</p>
+        <p className="font-bold text-forest-800">Read every book with Readly Premium</p>
+        <p className="text-sm text-muted">Ksh 10/day on your Safaricom line. {access.freeLeft} of 5 free books left on this device.</p>
       </div>
-      <button onClick={() => access.openSignIn()} className="btn-primary px-5 py-2">Sign in with your number</button>
+      <Link href="/subscription" className="btn-primary px-5 py-2">Subscribe</Link>
     </section>
   );
 

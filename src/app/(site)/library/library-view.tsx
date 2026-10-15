@@ -107,9 +107,29 @@ export function LibraryView() {
       {rest.length > 0 && (
         <Grid title="Also reading" books={rest} badge={(b) => `${Math.round((b as Progress).percent * 100)}%`} hrefPrefix="/read/" />
       )}
-      {state.saved.length > 0 && <Grid title="Saved books" books={state.saved} hrefPrefix="/books/" />}
+      {state.saved.length > 0 && <SavedBooks books={state.saved} />}
     </div>
     </>
+  );
+}
+
+/** Figma: mobile-library-page → "Saved Books" with a count badge and a 3-across grid. */
+function SavedBooks({ books }: { books: BookRef[] }) {
+  return (
+    <section>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-xl font-bold text-forest-800">Saved Books</h2>
+        <span className="rounded-full bg-forest-800 px-2.5 py-0.5 text-xs font-bold text-white">{books.length}</span>
+      </div>
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+        {books.map((b) => (
+          <Link key={b.slug} href={`/books/${b.slug}`} className="group">
+            <Thumb book={b} className="w-full transition group-hover:-translate-y-0.5" />
+            <p className="mt-1.5 line-clamp-1 text-xs font-semibold">{b.title}</p>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 

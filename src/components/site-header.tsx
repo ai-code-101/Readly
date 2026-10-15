@@ -2,12 +2,13 @@ import Link from "next/link";
 import { Logo } from "./logo";
 import { CategoryDrawer } from "./category-drawer";
 import { AccountButton } from "./account-button";
+import { SubscribeButton } from "./subscribe-button";
 import type { Category } from "@/lib/api";
 
 const NAV = [
   { href: "/", label: "Home" },
   { href: "/discover", label: "Discover" },
-  { href: "/categories", label: "Categories" },
+  { href: "/browse", label: "Browse" },
   { href: "/discover?staffPick=1", label: "Staff Picks" },
   { href: "/library", label: "Library" },
 ];
@@ -34,10 +35,12 @@ export function SiteHeader({ categories }: { categories: Category[] }) {
             <input name="q" placeholder="Search books" aria-label="Search books" className="w-40 bg-transparent outline-none placeholder:text-muted" />
           </label>
         </form>
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+          <SubscribeButton className="!py-2.5" />
           <AccountButton />
         </div>
-        <div className="ml-auto md:hidden">
+        <div className="ml-auto flex items-center gap-2 md:hidden">
+          <SubscribeButton className="!px-4 !py-2.5" />
           <CategoryDrawer categories={categories} />
         </div>
       </div>

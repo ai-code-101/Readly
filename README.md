@@ -22,8 +22,11 @@ Part of three repos:
     subscription is active for 24 h ("Subscription Successful!"). Airtime billing isn't connected yet,
     so verifying the number is enough for now.
   - "Already subscribed? Sign in with your number" restores access and progress on another device
-- **Categories**: all categories with Trending and Staff Picks rows, plus a page per category with sort
+- **Browse** (Figma "Readly Browse"): every category as a coloured tile with an icon, plus a search box
+  that filters categories (`/categories` redirects here); each category has its own page with sort
   (Most Popular / New Releases / Highest Rated / A–Z), search and pagination
+- **Subscribe Now** in the top bar opens the Ksh 10/day phone-OTP subscription directly; subscribers
+  see a "Premium" badge instead
 - **Discover**: search across the whole library; filters for trending, staff picks and free books
 - **Book page**: cover, rating, category, page count, reading time, synopsis, Start/Continue Reading,
   Save to Library, You May Also Like
@@ -34,7 +37,9 @@ Part of three repos:
   - progress bar, "% completed" and "Page X of Y" (Y is the page count set in the admin)
   - display settings: font size, brightness, White / Grey / Dark themes, Serif / Sans, line spacing
   - reopens at the page where you stopped
-- **My Library**: your current read with its progress, books you're also reading, and saved books
+- **My Library**: your current read with its progress, books you're also reading, and **Saved Books**
+  (with a count badge)
+- Mobile bottom navigation: **Home · Browse · Library**
 
 Reading progress is kept in the browser for everyone. Once a reader has subscribed (and is signed in
 with their number) it is also saved to the database, so it follows them to other devices. Saved books

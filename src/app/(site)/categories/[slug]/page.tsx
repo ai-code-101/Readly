@@ -25,7 +25,7 @@ export default async function CategoryPage(props: PageProps<"/categories/[slug]"
   return (
     <main className="container-page py-10">
       <nav className="mb-8 flex items-center gap-2 text-xs font-medium text-forest-900" aria-label="Breadcrumb">
-        <Link href="/categories" className="hover:underline">← Categories</Link>
+        <Link href="/browse" className="hover:underline">← Browse</Link>
         <span className="text-muted">/</span>
         <span>{category.name}</span>
       </nav>

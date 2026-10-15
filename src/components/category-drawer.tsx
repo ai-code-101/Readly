@@ -60,7 +60,7 @@ export function CategoryDrawer({ categories }: { categories: Category[] }) {
               {[{ slug: "", name: "All Categories" }, ...shown].map((c) => (
                 <Link
                   key={c.slug}
-                  href={c.slug ? `/categories/${c.slug}` : "/categories"}
+                  href={c.slug ? `/categories/${c.slug}` : "/browse"}
                   className="flex items-center justify-between border-b border-white/10 px-1 py-3.5 text-[15px]"
                 >
                   {c.name}

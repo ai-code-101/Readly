@@ -15,9 +15,20 @@ type Step =
 const PRICE_KES = 10;
 
 /** Subscription wall for paid books (Figma: subscription-paywall, payment-success-modal). */
-// Without a book it opens straight on "sign in with your number" (e.g. from My Library).
-export function Paywall({ book, onClose, onUnlocked }: { book?: PaywallBook; onClose: () => void; onUnlocked: () => void }) {
-  const [step, setStep] = useState<Step>(book ? { kind: "choose" } : { kind: "phone", purpose: "login" });
+// Without a book it opens straight on the phone step: "subscribe" (Subscribe Now
+// button) or "login" (sign in with your number, e.g. from My Library).
+export function Paywall({
+  book,
+  start = "login",
+  onClose,
+  onUnlocked,
+}: {
+  book?: PaywallBook;
+  start?: Purpose;
+  onClose: () => void;
+  onUnlocked: () => void;
+}) {
+  const [step, setStep] = useState<Step>(book ? { kind: "choose" } : { kind: "phone", purpose: start });
   const [plan, setPlan] = useState<"daily" | "free">("daily");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
@@ -230,7 +241,7 @@ export function Paywall({ book, onClose, onUnlocked }: { book?: PaywallBook; onC
                 </div>
               </div>
             )}
-            <button onClick={onUnlocked} className="btn-gold mt-6 w-full py-3.5 text-base">{book ? "Start Reading" : "Continue"}</button>
+            <button onClick={onUnlocked} className="btn-gold mt-6 w-full py-3.5 text-base">{book || step.purpose === "subscribe" ? "Start Reading" : "Continue"}</button>
           </div>
         )}
       </div>

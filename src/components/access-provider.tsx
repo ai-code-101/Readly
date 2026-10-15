@@ -15,6 +15,8 @@ type Access = {
   openPaywall: (book: PaywallBook, then?: () => void) => void;
   /** Sign in with a phone number (to restore progress on a new device). */
   openSignIn: () => void;
+  /** Subscribe without a specific book (Subscribe Now button). */
+  openSubscribe: () => void;
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -24,7 +26,7 @@ const Ctx = createContext<Access | null>(null);
 export function AccessProvider({ children }: { children: ReactNode }) {
   const [me, setMe] = useState<Me | null | undefined>(undefined);
   const [freeUsed, setFreeUsed] = useState<string[]>([]);
-  const [paywall, setPaywall] = useState<{ book?: PaywallBook; then?: () => void } | null>(null);
+  const [paywall, setPaywall] = useState<{ book?: PaywallBook; start?: "subscribe" | "login"; then?: () => void } | null>(null);
 
   const refresh = useCallback(async () => {
     setFreeUsed(freeBooks());
@@ -53,7 +55,8 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       freeLeft: Math.max(0, FREE_BOOK_LIMIT - freeUsed.length),
       canRead: (b) => b.isFree || subscribed || freeUsed.includes(b.slug),
       openPaywall: (book, then) => setPaywall({ book, then }),
-      openSignIn: () => setPaywall({}),
+      openSignIn: () => setPaywall({ start: "login" }),
+      openSubscribe: () => setPaywall({ start: "subscribe" }),
       refresh,
       signOut: async () => {
         await auth.logout().catch(() => {});
@@ -69,6 +72,7 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       {paywall && (
         <Paywall
           book={paywall.book}
+          start={paywall.start}
           onClose={() => setPaywall(null)}
           onUnlocked={() => {
             const then = paywall.then;

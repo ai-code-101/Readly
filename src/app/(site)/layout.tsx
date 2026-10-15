@@ -1,5 +1,4 @@
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { TabBar } from "@/components/tab-bar";
 
 export default function SiteLayout({ children }: LayoutProps<"/">) {
@@ -7,9 +6,8 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
     <>
       <SiteHeader />
       {children}
-      <SiteFooter />
-      {/* Room for the bottom tab bar on phones (the footer is hidden there). */}
-      <div className="h-24 md:hidden" aria-hidden />
+      {/* Bottom spacing; on phones it also leaves room for the tab bar. */}
+      <div className="h-24 md:h-16" aria-hidden />
       <TabBar />
     </>
   );

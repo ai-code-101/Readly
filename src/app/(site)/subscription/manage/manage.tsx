@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAccess } from "@/components/access-provider";
@@ -54,13 +53,10 @@ export function ManageSubscription() {
             <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition ${autoRenew ? "left-[22px]" : "left-0.5"}`} />
           </button>
         </label>
-        <Link href="/subscription/checkout" className="flex items-center justify-between px-4 py-4">
-          <span>
-            <span className="block text-sm font-semibold">Payment method</span>
-            <span className="block text-xs text-muted">Airtime · M-Pesa · Card</span>
-          </span>
-          <span className="text-sm font-semibold text-forest-700">Change ›</span>
-        </Link>
+        <div className="px-4 py-4">
+          <span className="block text-sm font-semibold">Payment method</span>
+          <span className="block text-xs text-muted">Safaricom Airtime · Ksh {PLAN.price}/day</span>
+        </div>
       </div>
 
       <button onClick={() => setConfirming(true)} className="mx-auto mt-8 block text-sm font-semibold text-red-700 underline">
